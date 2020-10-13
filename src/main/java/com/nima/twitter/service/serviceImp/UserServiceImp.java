@@ -10,10 +10,10 @@ import com.nima.twitter.service.LikeObjService;
 import com.nima.twitter.service.TwitService;
 import com.nima.twitter.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-//import com.nima.twitter.security.UserRole;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.nima.twitter.security.UserRole;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,8 +23,7 @@ import java.util.Optional;
 import static java.lang.String.format;
 
 @Service
-//public class UserServiceImp implements UserService, UserDetailsService {
-public class UserServiceImp implements UserService {
+public class UserServiceImp implements UserService, UserDetailsService {
 
     @Autowired
     private TwitService twitService;
@@ -47,7 +46,7 @@ public class UserServiceImp implements UserService {
         user.setUsername(username);
         user.setEmail(email);
         user.setPhone(phone);
-        /**
+
         role = role.toLowerCase();
         switch (role){
             case "a":
@@ -59,7 +58,7 @@ public class UserServiceImp implements UserService {
             default:
                 throw new IOException("Role not found");
         }
-        **/
+
         return userRepository.save(user);
     }
 
@@ -117,14 +116,14 @@ public class UserServiceImp implements UserService {
         return userRepository.findByPhone(phone).get();
     }
 
-//    @Override
-//    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-//        final Optional<User> user = userRepository.findByUsername(s);
-//        if (user.isPresent()) {
-//            return user.get();
-//        }
-//        else {
-//            throw new UsernameNotFoundException(format("User with username {0} cannot be found.", s));
-//        }
-//    }
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        final Optional<User> user = userRepository.findByUsername(s);
+        if (user.isPresent()) {
+            return user.get();
+        }
+        else {
+            throw new UsernameNotFoundException(format("User with username {0} cannot be found.", s));
+        }
+    }
 }

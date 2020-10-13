@@ -1,13 +1,15 @@
 package com.nima.twitter.domain;
 
+import com.nima.twitter.security.UserRole;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
 @Table
 @Inheritance(strategy = InheritanceType.JOINED)
-//public class User implements UserDetails {
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long Id;
@@ -24,7 +26,7 @@ public class User {
     @Column
     private String email;
 
-    //private UserRole role;
+    private UserRole role;
 
     private boolean enabled;
 
@@ -52,7 +54,7 @@ public class User {
     public String getUsername() {
         return username;
     }
-    /**
+
     public UserRole getRole() {
         return role;
     }
@@ -85,7 +87,7 @@ public class User {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getGrantedAuthorities();
     }
-    **/
+
     public void setUsername(String username) {
         this.username = username;
     }
