@@ -4,11 +4,14 @@ import com.nima.twitter.domain.Comment;
 import com.nima.twitter.domain.LikeObj;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.IOException;
 import java.util.List;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
     User create(String username, String password, String phone, String email, String role) throws IOException;
 

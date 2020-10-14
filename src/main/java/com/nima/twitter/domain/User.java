@@ -28,6 +28,7 @@ public class User implements UserDetails {
 
     private UserRole role;
 
+
     private boolean enabled;
 
     private boolean verified;

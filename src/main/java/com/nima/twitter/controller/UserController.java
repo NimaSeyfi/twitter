@@ -8,10 +8,9 @@ import com.nima.twitter.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -20,8 +19,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
     @PostMapping
-    //@PreAuthorize("hasAuthority('user:write')")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<User> createUser(@RequestParam String username,
                                            @RequestParam String password,
                                            @RequestParam String phone,
