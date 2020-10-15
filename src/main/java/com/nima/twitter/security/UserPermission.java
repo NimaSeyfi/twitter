@@ -1,8 +1,8 @@
 package com.nima.twitter.security;
 
 public enum UserPermission {
-    TWEET_READ("tweet:read"),
-    TWEET_WRITE("tweet:write"),
+    TWIT_READ("twit:read"),
+    TWIT_WRITE("twit:write"),
     LIKE_READ("like:read"),
     LIKE_WRITE("like:write"),
     COMMENT_READ("comment:read"),

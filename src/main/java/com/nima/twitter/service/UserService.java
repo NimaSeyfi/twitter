@@ -33,4 +33,8 @@ public interface UserService extends UserDetailsService {
 
     User findUserByPhone(String phone);
 
+    User findUserByUsername(String username);
+
+    void createAdmin() throws IOException;
+
 }

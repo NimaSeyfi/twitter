@@ -1,7 +1,9 @@
 package com.nima.twitter.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table
@@ -19,6 +21,12 @@ public class Twit {
 
     @Column
     private Date pubDate;
+
+    @OneToMany(mappedBy = "twit", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<LikeObj> likes = new ArrayList<LikeObj>();
+
+    @OneToMany(mappedBy = "twit", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Comment> comments = new ArrayList<Comment>();
 
     public long getId() {
         return Id;

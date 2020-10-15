@@ -4,7 +4,9 @@ import com.nima.twitter.security.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table
@@ -28,6 +30,8 @@ public class User implements UserDetails {
 
     private UserRole role;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Twit> twits = new ArrayList<Twit>();
 
     private boolean enabled;
 

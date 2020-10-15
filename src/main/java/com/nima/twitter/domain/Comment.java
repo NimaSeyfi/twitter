@@ -1,5 +1,7 @@
 package com.nima.twitter.domain;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
+
 import javax.persistence.*;
 import java.util.Date;
 

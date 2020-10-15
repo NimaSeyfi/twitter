@@ -118,6 +118,23 @@ public class UserServiceImp implements UserDetailsService,UserService {
     }
 
     @Override
+    public User findUserByUsername(String username) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            return userRepository.findByUsername(username).get();
+        } else{
+            return null;
+        }
+    }
+
+    @Override
+    public void createAdmin() throws IOException {
+        if (!userRepository.findByUsername("admin").isPresent()) {
+            this.create("admin", "admin", "09123456789",
+                    "mail@mail.com","a");
+        }
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
 
         final Optional<User> user = userRepository.findByUsername(s);

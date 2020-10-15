@@ -12,15 +12,16 @@ public enum UserRole {
             LIKE_WRITE,
             COMMENT_READ,
             COMMENT_WRITE,
-            TWEET_READ,
-            TWEET_WRITE,
+            TWIT_READ,
+            TWIT_WRITE,
             USER_READ)),
     ADMIN(Sets.newHashSet(LIKE_READ,
             LIKE_WRITE,
             COMMENT_READ,
             COMMENT_WRITE,
-            TWEET_READ,
-            TWEET_WRITE,
+            TWIT_READ,
+            TWIT_WRITE
+            ,
             USER_READ,
             USER_WRITE));
 
