@@ -34,6 +34,7 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
         this.secretKey = secretKey;
     }
 
+    //creating a filter to verify request's token
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -42,11 +43,13 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader(jwtConfig.getAuthorizationHeader());
 
         if (Strings.isNullOrEmpty(authorizationHeader) || !authorizationHeader.startsWith("Bearer ")){
+            //if token cannot be verified, pass to the next filter
             filterChain.doFilter(request, response);
             return;
         }
 
         try{
+            //generate token from request and parse it
             String token = authorizationHeader.replace(jwtConfig.getTokenPrefix(), "");
 
             Jws<Claims> claimsJws = Jwts.parser()
@@ -58,6 +61,7 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
             Set<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities.stream()
                     .map(m -> new SimpleGrantedAuthority(m.get("authority")))
                     .collect(Collectors.toSet());
+            //authenticate token's user
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     username,
                     null,
@@ -68,6 +72,7 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
             throw new IllegalStateException("token cannot be verified");
         }
 
+        //pass to the next filter
         filterChain.doFilter(request, response);
 
     }

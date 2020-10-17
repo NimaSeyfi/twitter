@@ -35,7 +35,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-
+    //configure security settings based on jwt
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -50,6 +50,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 ;
     }
+
+    //add a custom userDetailsService and password encoder
     @Autowired
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService)

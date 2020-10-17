@@ -30,7 +30,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         this.jwtConfig = jwtConfig;
         this.secretKey = secretKey;
     }
-
+    //first filter to authenticate username and password and generate token
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
@@ -52,6 +52,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         }
     }
 
+    //after a successful Authentication, we should generate the token and send it to the user
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
