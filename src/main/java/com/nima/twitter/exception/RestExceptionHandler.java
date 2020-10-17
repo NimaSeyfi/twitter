@@ -32,6 +32,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
+    @ExceptionHandler(DateFormatException.class)
+    protected ResponseEntity<Object> handleDateFormatException(DateFormatException ex) {
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
     @ExceptionHandler(RoleNotFoundException.class)
     protected ResponseEntity<Object> handleRoleNotFoundException(RoleNotFoundException ex) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);

@@ -3,10 +3,12 @@ package com.nima.twitter.controller;
 import com.nima.twitter.domain.LikeObj;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import com.nima.twitter.exception.DateFormatException;
 import com.nima.twitter.exception.Exception404;
 import com.nima.twitter.service.LikeObjService;
 import com.nima.twitter.service.TwitService;
 import com.nima.twitter.service.UserService;
+import org.checkerframework.checker.units.qual.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,8 +16,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/like")
@@ -36,28 +44,32 @@ public class LikeController {
     @PostMapping
     @PreAuthorize("hasAuthority('like:write')")
     public ResponseEntity<LikeObj> createLikeWithUserIdAndTwitId(@RequestParam long userId,
-                                                        @RequestParam long twitId) throws Exception404 {
+                                                                 @RequestParam long twitId) throws Exception404 {
         Twit twit = twitService.findTwit(twitId);
         User user = userService.findUser(userId);
         Date pubDate = new Date();
-        return ResponseEntity.ok(likeObjService.create(user,twit, pubDate));
+        return ResponseEntity.ok(likeObjService.create(user, twit, pubDate));
     }
 
     @PutMapping
     @PreAuthorize("hasAuthority('like:write')")
     public ResponseEntity<LikeObj> updateLike(@RequestParam long id,
-                                           @RequestParam long userId,
-                                           @RequestParam long twitId,
-                                           @RequestParam String pubDate) throws ParseException, Exception404 {
+                                              @RequestParam long userId,
+                                              @RequestParam long twitId,
+                                              @RequestParam String pubDate) throws DateFormatException, Exception404, ParseException {
         Twit twit = twitService.findTwit(twitId);
         User user = userService.findUser(userId);
-        Date date=new SimpleDateFormat("yyyy/mm/dd hh:mm:ss").parse(pubDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
+        if(!isValidFormat("yyyy/mm/dd hh:mm:ss" , pubDate)){
+            throw new DateFormatException(String.format("date format $s is wrong.use \"yyyy/mm/dd hh:mm:ss\"",pubDate));
+        }
+        Date date = sdf.parse(pubDate);
         return ResponseEntity.ok(likeObjService.update(id, user, twit, date));
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<LikeObj>> getAllLikes(){
+    public ResponseEntity<List<LikeObj>> getAllLikes() {
         return ResponseEntity.ok(likeObjService.getAllLikes());
     }
 
@@ -77,10 +89,31 @@ public class LikeController {
     @GetMapping("find-likes-between")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<LikeObj>> findLikesBetween(@RequestParam String s,
-                                                          @RequestParam String e) throws ParseException{
-        Date sdate=new SimpleDateFormat("yyyy/mm/dd hh:mm:ss").parse(s);
-        Date edate=new SimpleDateFormat("yyyy/mm/dd hh:mm:ss").parse(e);
+                                                          @RequestParam String e) throws DateFormatException,ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
+        if(!isValidFormat("yyyy/mm/dd hh:mm:ss" , s) || !isValidFormat("yyyy/mm/dd hh:mm:ss" , e)){
+            throw new DateFormatException(String.format("date format is wrong.use \"yyyy/mm/dd hh:mm:ss\""));
+        }
+        Date sdate = sdf.parse(s);
+        Date edate = sdf.parse(e);
         return ResponseEntity.ok(likeObjService.findLikesBetweenDate(sdate, edate));
     }
 
+    private boolean isValidFormat(String format, String value) {
+        Date date = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            date = sdf.parse(value);
+            if (!value.equals(sdf.format(date))) {
+                date = null;
+            }
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        if (date == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

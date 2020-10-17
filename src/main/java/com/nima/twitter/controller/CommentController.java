@@ -3,6 +3,7 @@ package com.nima.twitter.controller;
 import com.nima.twitter.domain.Comment;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import com.nima.twitter.exception.DateFormatException;
 import com.nima.twitter.exception.Exception404;
 import com.nima.twitter.service.CommentService;
 import com.nima.twitter.service.TwitService;
@@ -53,7 +54,11 @@ public class CommentController {
                                               @RequestParam String pubDate) throws ParseException, Exception404 {
         Twit twit = twitService.findTwit(twitId);
         User user = userService.findUser(userId);
-        Date date=new SimpleDateFormat("yyyy/mm/dd hh:mm:ss").parse(pubDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
+        if(!isValidFormat("yyyy/mm/dd hh:mm:ss" , pubDate)){
+            throw new DateFormatException(String.format("date format $s is wrong.use \"yyyy/mm/dd hh:mm:ss\"",pubDate));
+        }
+        Date date = sdf.parse(pubDate);
         return ResponseEntity.ok(commentService.update(id, user, twit, text, date));
     }
 
@@ -80,8 +85,30 @@ public class CommentController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Comment>> findCommentsBetween(@RequestParam String s,
                                                           @RequestParam String e) throws ParseException{
-        Date sdate=new SimpleDateFormat("yyyy/mm/dd hh:mm:ss").parse(s);
-        Date edate=new SimpleDateFormat("yyyy/mm/dd hh:mm:ss").parse(e);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
+        if(!isValidFormat("yyyy/mm/dd hh:mm:ss" , s) || !isValidFormat("yyyy/mm/dd hh:mm:ss" , e)){
+            throw new DateFormatException(String.format("date format is wrong.use \"yyyy/mm/dd hh:mm:ss\""));
+        }
+        Date sdate = sdf.parse(s);
+        Date edate = sdf.parse(e);
         return ResponseEntity.ok(commentService.findCommentsBetweenDates(sdate, edate));
+    }
+
+    private boolean isValidFormat(String format, String value) {
+        Date date = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            date = sdf.parse(value);
+            if (!value.equals(sdf.format(date))) {
+                date = null;
+            }
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        if (date == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
