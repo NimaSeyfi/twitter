@@ -8,22 +8,14 @@ import com.nima.twitter.exception.Exception404;
 import com.nima.twitter.service.LikeObjService;
 import com.nima.twitter.service.TwitService;
 import com.nima.twitter.service.UserService;
-import org.checkerframework.checker.units.qual.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/like")

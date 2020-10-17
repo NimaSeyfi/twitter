@@ -182,33 +182,134 @@ There are 4 @RestController in our Application (one for each Service). <br>
                                                                                             @RequestParam String email
 
 - **getAllUsers** : @GetMapping("/all")
-                    @PreAuthorize("hasRole('ROLE_ADMIN')")
+                    @PreAuthorize("hasRole('ROLE_ADMIN')")<br>
                     **getting All Users. Params** : No Params needed.     
 
 - **getUser** : @GetMapping("/all")
-                    @PreAuthorize("hasRole('ROLE_ADMIN')")
+                    @PreAuthorize("hasRole('ROLE_ADMIN')")<br>
                     **get User of entered ID. Params** : @RequestParam long id
 
 - **getUserByPhone** : @GetMapping("/all")
-                    @PreAuthorize("hasRole('ROLE_ADMIN')")
+                    @PreAuthorize("hasRole('ROLE_ADMIN')")<br>
                     **get User of entered Phone. Params** : @RequestParam string phone
 
 - **getUserByEmail** : @GetMapping("/all")
-                    @PreAuthorize("hasRole('ROLE_ADMIN')")
+                    @PreAuthorize("hasRole('ROLE_ADMIN')")<br>
                     **get User of entered email. Params** : @RequestParam string email
  
 - **deleteUser** : @DeleteMapping
-                       @PreAuthorize("hasAuthority('user:write')")
+                       @PreAuthorize("hasAuthority('user:write')")<br>
                     **Removes User. Params** : @RequestParam long id
 
 - **getUserTwits** : @GetMapping("/gut")
-      @PreAuthorize("hasAnyAuthority({'user:read','twit:read'})")
+      @PreAuthorize("hasAnyAuthority({'user:read','twit:read'})")<br>
       **Get user twits** : @RequestParam long id   
       
 - **getUserLikes** : @GetMapping("/gul") 
                          @PreAuthorize("hasAnyAuthority({'user:read','twit:read','like:read'})")
-      **Get user likes** : @RequestParam long id      
+      <br>**Get user likes** : @RequestParam long id      
       
 - **getUserComments** :@GetMapping("/guc")
                         @PreAuthorize("hasAnyAuthority({'user:read','twit:read','comment:read'})")
-                         **Get user comments** : @RequestParam long id                                                             
+                         <br>**Get user comments** : @RequestParam long id  
+
+**TwitController:** (prefix = "/twit")<br>   
+
+- **createTwitWithUserId** : @PostMapping
+                                 @PreAuthorize("hasAuthority('twit:write')")
+                                 <br>**Creates a new twit and take the UserID. Params**:@RequestParam long userId,
+                                                                                  @RequestParam String content  
+
+- **updateTwit** : @PostMapping
+                                 @PreAuthorize("hasAuthority('twit:write')")
+                                 <br>**Updates twit. Params**:@RequestParam long id,
+                                                                                                                           @RequestParam long userId,
+                                                                                                                           @RequestParam String content,
+                                                                                                                           @RequestParam String pubDate     
+
+- **getAllTwits** : @GetMapping("/all")
+                        @PreAuthorize("hasRole('ROLE_ADMIN')")
+                                 <br>**Returns All Twits. Params**:No Params needed.
+
+- **getTwit** : @GetMapping
+                    @PreAuthorize("hasAuthority('twit:read')")
+                                 <br>**finds twit by ID. Params**:@RequestParam long id       
+
+- **deleteTwit** : @DeleteMapping
+                    @PreAuthorize("hasRole('ROLE_ADMIN')")
+                                 <br>**deletes twit by ID. Params**:@RequestParam long id 
+
+- **getTwitLikes** : @GetMapping("gtl")
+                         @PreAuthorize("hasAuthority('twit:read')")
+                                 <br>**Get Twit likes. Params**:@RequestParam long id 
+
+- **getTwitComments** : @GetMapping("gtc")
+                            @PreAuthorize("hasAuthority('twit:read')")
+                                 <br>**Get Twit comments. Params**:@RequestParam long id 
+                                 
+
+**CommentController:** (prefix = "/comment")<br>   
+
+- **createCommentWithUserIdAndTwitId** : @PostMapping
+                                             @PreAuthorize("hasAuthority('comment:write')")
+                   <br>**create new comment with user and twit id. Params** : @RequestParam long userId,@RequestParam long twitId, @RequestParam String text
+
+- **updateComment** :@PutMapping
+                         @PreAuthorize("hasAuthority('comment:write')")
+                   <br>**update a comment. Params** : @RequestParam long id,
+                                                                                                    @RequestParam long userId,
+                                                                                                    @RequestParam long twitId,
+                                                                                                    @RequestParam String text,
+                                                                                                    @RequestParam String pubDate
+                                                                                                    
+
+- **getAllComments** : @GetMapping("/all")
+                           @PreAuthorize("hasRole('ROLE_ADMIN')")
+                   <br>**returns All Comments List. Params** : No Params Needed.
+
+- **getComment** : @GetMapping
+                       @PreAuthorize("hasAuthority('comment:read')")
+                   <br>**get comment with id. Params** : @RequestParam long id
+                                                                                   
+
+- **deleteComment** :@DeleteMapping
+                         @PreAuthorize("hasAuthority('comment:write')")
+                   <br>**deletes comment with id. Params** : @RequestParam long id       
+                   
+- **findCommentsBetween** :@GetMapping("find-cm-between")
+                                @PreAuthorize("hasRole('ROLE_ADMIN')")
+                   <br>**get Comments between two dates. Params** : @RequestParam String s,@RequestParam String e
+                   <br>**NOTE:** Date Format entered (In string type) should be : "yyyy/mm/dd hh:mm:ss"
+
+
+**LikeController:** (prefix = "/like")<br>   
+
+- **createLikeWithUserIdAndTwitId** : @PostMapping
+                                             @PreAuthorize("hasAuthority('like:write')")
+                   <br>**create new like with user and twit id. Params** : @RequestParam long userId,@RequestParam long twitId
+
+- **updateLike** :@PutMapping
+                         @PreAuthorize("hasAuthority('like:write')")
+                   <br>**update a likeObj. Params** : @RequestParam long id,
+                                                                                                    @RequestParam long userId,
+                                                                                                    @RequestParam long twitId,
+                                                                                                    @RequestParam String pubDate
+                                                                                                    
+
+- **getAllLikes** : @GetMapping("/all")
+                           @PreAuthorize("hasRole('ROLE_ADMIN')")
+                   <br>**returns All Likes List. Params** : No Params Needed.
+
+- **getLike** : @GetMapping
+                    @PreAuthorize("hasAuthority('like:read')")
+                   <br>**get like with id. Params** : @RequestParam long id
+                                                                                   
+
+- **deleteLike** :@DeleteMapping
+                         @PreAuthorize("hasAuthority('like:write')")
+                   <br>**deletes like with id. Params** : @RequestParam long id       
+                   
+- **findLikesBetween** :@GetMapping("find-likes-between")
+                            @PreAuthorize("hasRole('ROLE_ADMIN')")
+                   <br>**get likes between two dates. Params** : @RequestParam String s,@RequestParam String e
+                   <br>**NOTE:** Date Format entered (In string type) should be : "yyyy/mm/dd hh:mm:ss"
