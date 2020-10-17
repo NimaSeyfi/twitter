@@ -8,6 +8,7 @@ import com.nima.twitter.service.TwitService;
 import com.nima.twitter.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -19,15 +20,20 @@ import java.util.List;
 @RequestMapping("/like")
 public class LikeController {
 
+    private final TwitService twitService;
+    private final UserService userService;
+    private final LikeObjService likeObjService;
+
     @Autowired
-    private TwitService twitService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private LikeObjService likeObjService;
+    public LikeController(TwitService twitService, UserService userService, LikeObjService likeObjService) {
+        this.twitService = twitService;
+        this.userService = userService;
+        this.likeObjService = likeObjService;
+    }
 
 
     @PostMapping
+    @PreAuthorize("hasAuthority('like:write')")
     public ResponseEntity<LikeObj> createLikeWithUserIdAndTwitId(@RequestParam long userId,
                                                         @RequestParam long twitId){
         Twit twit = twitService.findTwit(twitId);
@@ -37,6 +43,7 @@ public class LikeController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('like:write')")
     public ResponseEntity<LikeObj> updateLike(@RequestParam long id,
                                            @RequestParam long userId,
                                            @RequestParam long twitId,
@@ -48,22 +55,26 @@ public class LikeController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<LikeObj>> getAllLikes(){
         return ResponseEntity.ok(likeObjService.getAllLikes());
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('like:read')")
     public ResponseEntity<LikeObj> getLike(@RequestParam long id){
         return ResponseEntity.ok(likeObjService.findLike(id));
     }
 
     @DeleteMapping
+    @PreAuthorize("hasAuthority('like:write')")
     public ResponseEntity<Void> deleteLike(@RequestParam long id){
         likeObjService.delete(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("find-likes-between")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<LikeObj>> findLikesBetween(@RequestParam String s,
                                                           @RequestParam String e) throws ParseException{
         Date sdate=new SimpleDateFormat("yyyy/mm/dd hh:mm:ss").parse(s);
