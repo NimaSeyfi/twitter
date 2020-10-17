@@ -3,6 +3,7 @@ package com.nima.twitter.controller;
 import com.nima.twitter.domain.LikeObj;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import com.nima.twitter.exception.Exception404;
 import com.nima.twitter.service.LikeObjService;
 import com.nima.twitter.service.TwitService;
 import com.nima.twitter.service.UserService;
@@ -35,7 +36,7 @@ public class LikeController {
     @PostMapping
     @PreAuthorize("hasAuthority('like:write')")
     public ResponseEntity<LikeObj> createLikeWithUserIdAndTwitId(@RequestParam long userId,
-                                                        @RequestParam long twitId){
+                                                        @RequestParam long twitId) throws Exception404 {
         Twit twit = twitService.findTwit(twitId);
         User user = userService.findUser(userId);
         Date pubDate = new Date();
@@ -47,7 +48,7 @@ public class LikeController {
     public ResponseEntity<LikeObj> updateLike(@RequestParam long id,
                                            @RequestParam long userId,
                                            @RequestParam long twitId,
-                                           @RequestParam String pubDate) throws ParseException {
+                                           @RequestParam String pubDate) throws ParseException, Exception404 {
         Twit twit = twitService.findTwit(twitId);
         User user = userService.findUser(userId);
         Date date=new SimpleDateFormat("yyyy/mm/dd hh:mm:ss").parse(pubDate);
@@ -62,13 +63,13 @@ public class LikeController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('like:read')")
-    public ResponseEntity<LikeObj> getLike(@RequestParam long id){
+    public ResponseEntity<LikeObj> getLike(@RequestParam long id) throws Exception404 {
         return ResponseEntity.ok(likeObjService.findLike(id));
     }
 
     @DeleteMapping
     @PreAuthorize("hasAuthority('like:write')")
-    public ResponseEntity<Void> deleteLike(@RequestParam long id){
+    public ResponseEntity<Void> deleteLike(@RequestParam long id) throws Exception404 {
         likeObjService.delete(id);
         return ResponseEntity.ok().build();
     }
