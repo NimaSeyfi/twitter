@@ -35,7 +35,7 @@ LikeObj: a like entity wich has Many-to-one relations with User and Twit domains
   - Twit twit
   - Date date
   
-![Relation Between Domains](https://srv-file1.gofile.io/downloadStore/srv-store5/oQ1MP0/Blank%20diagram.png)<br>
+![Relation Between Domains](https://i.ibb.co/D8RQR4h/Blank-diagram.png)<br>
 
 **NOTE:** All ids are auto generated. 
 **NOTE:** UserRole is a ENUM class that used for Roles in this application. Any Role containts some Permissions wich are used for authorize methods and giving access to users.
