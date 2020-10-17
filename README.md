@@ -67,6 +67,7 @@ Any Domain Also have a Service. in any service we user the Repository of that do
   - findUserByEmail : find user by email.<br>
   - findUserByPhone : find user by phone.<br>
 <br>
+
 **TwitService:**<br>
   - create : creating new twit.<br>
   - update : updating selected twit.<br>
@@ -76,6 +77,7 @@ Any Domain Also have a Service. in any service we user the Repository of that do
   - getTwitComments : returns selected twit comments.<br>
   - findTwit : find twit by ID.<br>
 <br>
+
 **CommentService:**<br>
   - create : creating new comment.<br>
   - update : updating selected comment.<br>
@@ -85,8 +87,10 @@ Any Domain Also have a Service. in any service we user the Repository of that do
   - getUserComments : returns selected user comments.<br>
   - findComment : find comment by ID.<br>
   - findCommentBetweenDates : find comments between start date and end date.<br>
+  
      **NOTE:** Date Format entered (In string type) should be : "yyyy/mm/dd hh:mm:ss"
 <br>
+
 **LikeObjService:**<br>
   - create : creating new like.<br>
   - update : updating selected like.<br>
@@ -96,4 +100,5 @@ Any Domain Also have a Service. in any service we user the Repository of that do
   - getUserLikes : returns selected user likes.<br>
   - findLike : find like by ID.<br>
   - findLikeBetweenDates : find likes between start date and end date.<br>
+  
      **NOTE:** Date Format entered (In string type) should be : "yyyy/mm/dd hh:mm:ss"
