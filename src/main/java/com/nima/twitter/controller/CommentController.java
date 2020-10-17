@@ -51,7 +51,7 @@ public class CommentController {
                                               @RequestParam long userId,
                                               @RequestParam long twitId,
                                               @RequestParam String text,
-                                              @RequestParam String pubDate) throws ParseException, Exception404 {
+                                              @RequestParam String pubDate) throws DateFormatException,ParseException, Exception404 {
         Twit twit = twitService.findTwit(twitId);
         User user = userService.findUser(userId);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
@@ -84,7 +84,7 @@ public class CommentController {
     @GetMapping("find-cm-between")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Comment>> findCommentsBetween(@RequestParam String s,
-                                                          @RequestParam String e) throws ParseException{
+                                                          @RequestParam String e) throws DateFormatException,ParseException{
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss");
         if(!isValidFormat("yyyy/mm/dd hh:mm:ss" , s) || !isValidFormat("yyyy/mm/dd hh:mm:ss" , e)){
             throw new DateFormatException(String.format("date format is wrong.use \"yyyy/mm/dd hh:mm:ss\""));
