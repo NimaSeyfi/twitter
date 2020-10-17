@@ -3,6 +3,7 @@ package com.nima.twitter.service.serviceImp;
 import com.nima.twitter.domain.Comment;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import com.nima.twitter.exception.Exception404;
 import com.nima.twitter.repository.CommentRepository;
 import com.nima.twitter.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class CommentServiceImp implements CommentService {
     }
 
     @Override
-    public Comment update(long id, User user, Twit twit, String text, Date date) {
+    public Comment update(long id, User user, Twit twit, String text, Date date) throws Exception404 {
         Comment comment = this.findComment(id);
         comment.setUser(user);
         comment.setTwit(twit);
@@ -42,7 +43,7 @@ public class CommentServiceImp implements CommentService {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(long id) throws Exception404 {
         Comment comment = this.findComment(id);
         commentRepository.delete(comment);
     }
@@ -63,8 +64,11 @@ public class CommentServiceImp implements CommentService {
     }
 
     @Override
-    public Comment findComment(long id) {
-        return commentRepository.findById(id).get();
+    public Comment findComment(long id) throws Exception404 {
+        return commentRepository.findById(id)
+                .orElseThrow(
+                        ()->new Exception404(String.format("Comment not found with id : %d",id))
+                );
     }
 
     @Override

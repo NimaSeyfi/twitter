@@ -4,6 +4,9 @@ import com.nima.twitter.domain.Comment;
 import com.nima.twitter.domain.LikeObj;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import com.nima.twitter.exception.EntityExistException;
+import com.nima.twitter.exception.Exception404;
+import com.nima.twitter.exception.RoleNotFoundException;
 import com.nima.twitter.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +33,8 @@ public class UserController {
                                            @RequestParam String password,
                                            @RequestParam String phone,
                                            @RequestParam String email,
-                                           @RequestParam String role) throws IOException {
+                                           @RequestParam String role) throws EntityExistException,
+            RoleNotFoundException {
         User user = userService.create(username, password, phone, email, role);
         return ResponseEntity.ok(user);
     }
@@ -41,7 +45,7 @@ public class UserController {
                                            @RequestParam String username,
                                            @RequestParam String password,
                                            @RequestParam String phone,
-                                           @RequestParam String email){
+                                           @RequestParam String email) throws Exception404 {
         return ResponseEntity.ok(userService.update(id, username, password, phone, email));
     }
 
@@ -53,7 +57,7 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('user:read')")
-    public ResponseEntity<User> getUser(@RequestParam long id){
+    public ResponseEntity<User> getUser(@RequestParam long id) throws Exception404 {
         return ResponseEntity.ok(userService.findUser(id));
     }
 
@@ -72,26 +76,26 @@ public class UserController {
 
     @DeleteMapping
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<Void> deleteUser(@RequestParam long id){
+    public ResponseEntity<Void> deleteUser(@RequestParam long id) throws Exception404 {
         userService.delete(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/gut") //Get user twits
     @PreAuthorize("hasAnyAuthority({'user:read','twit:read'})")
-    public ResponseEntity<List<Twit>> getUserTwits(@RequestParam long id){
+    public ResponseEntity<List<Twit>> getUserTwits(@RequestParam long id) throws Exception404 {
         return ResponseEntity.ok(userService.getUserTwits(id));
     }
 
     @GetMapping("/gul") //Get user likes
     @PreAuthorize("hasAnyAuthority({'user:read','twit:read','like:read'})")
-    public ResponseEntity<List<LikeObj>> getUserLikes(@RequestParam long id){
+    public ResponseEntity<List<LikeObj>> getUserLikes(@RequestParam long id) throws Exception404 {
         return ResponseEntity.ok(userService.getUserLikes(id));
     }
 
     @GetMapping("/guc") //Get user comments
     @PreAuthorize("hasAnyAuthority({'user:read','twit:read','comment:read'})")
-    public ResponseEntity<List<Comment>> getUserComments(@RequestParam long id){
+    public ResponseEntity<List<Comment>> getUserComments(@RequestParam long id) throws Exception404 {
         return ResponseEntity.ok(userService.getUserComments(id));
     }
 }

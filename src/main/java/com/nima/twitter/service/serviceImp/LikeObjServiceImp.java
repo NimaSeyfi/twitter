@@ -3,6 +3,7 @@ package com.nima.twitter.service.serviceImp;
 import com.nima.twitter.domain.LikeObj;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import com.nima.twitter.exception.Exception404;
 import com.nima.twitter.repository.LikeObjRepository;
 import com.nima.twitter.service.LikeObjService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class LikeObjServiceImp implements LikeObjService {
     }
 
     @Override
-    public LikeObj update(long id, User user, Twit twit, Date date) {
+    public LikeObj update(long id, User user, Twit twit, Date date) throws Exception404 {
         LikeObj like = this.findLike(id);
         like.setUser(user);
         like.setTwit(twit);
@@ -40,7 +41,7 @@ public class LikeObjServiceImp implements LikeObjService {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(long id) throws Exception404 {
         LikeObj like = this.findLike(id);
         likeObjRepository.delete(like);
     }
@@ -61,8 +62,9 @@ public class LikeObjServiceImp implements LikeObjService {
     }
 
     @Override
-    public LikeObj findLike(long id) {
-        return likeObjRepository.findById(id).get();
+    public LikeObj findLike(long id) throws Exception404 {
+        return likeObjRepository.findById(id)
+                .orElseThrow(()->new Exception404(String.format("LikeObj not found with id : %d",id)));
     }
 
     @Override

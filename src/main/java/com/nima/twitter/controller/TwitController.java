@@ -4,6 +4,7 @@ import com.nima.twitter.domain.Comment;
 import com.nima.twitter.domain.LikeObj;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import com.nima.twitter.exception.Exception404;
 import com.nima.twitter.service.TwitService;
 import com.nima.twitter.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class TwitController {
     @PostMapping
     @PreAuthorize("hasAuthority('twit:write')")
     public ResponseEntity<Twit> createTwitWithUserId(@RequestParam long userId,
-                                                     @RequestParam String content){
+                                                     @RequestParam String content) throws Exception404 {
         User user = userService.findUser(userId);
         Date pubDate = new Date();
         return ResponseEntity.ok(twitService.create(user, content, pubDate));
@@ -43,7 +44,7 @@ public class TwitController {
     public ResponseEntity<Twit> updateTwit(@RequestParam long id,
                                            @RequestParam long userId,
                                            @RequestParam String content,
-                                           @RequestParam String pubDate) throws ParseException {
+                                           @RequestParam String pubDate) throws ParseException, Exception404 {
         User user = userService.findUser(userId);
         Date date=new SimpleDateFormat("yyyy/mm/dd hh:mm:ss").parse(pubDate);
         return ResponseEntity.ok(twitService.update(id, user, content, date));
@@ -57,13 +58,13 @@ public class TwitController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('twit:read')")
-    public ResponseEntity<Twit> getTwit(@RequestParam long id){
-        return ResponseEntity.ok(twitService.findTwit(id));
+    public ResponseEntity<Twit> getTwit(@RequestParam long id) throws Exception404 {
+            return ResponseEntity.ok(twitService.findTwit(id));
     }
 
     @DeleteMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> deleteTwit(@RequestParam long id){
+    public ResponseEntity<Void> deleteTwit(@RequestParam long id) throws Exception404 {
         twitService.delete(id);
         return ResponseEntity.ok().build();
     }
@@ -71,13 +72,13 @@ public class TwitController {
 
     @GetMapping("gtl") //Get twit likes
     @PreAuthorize("hasAuthority('twit:read')")
-    public ResponseEntity<List<LikeObj>> getTwitLikes(@RequestParam long id){
+    public ResponseEntity<List<LikeObj>> getTwitLikes(@RequestParam long id) throws Exception404 {
         return ResponseEntity.ok(twitService.getTwitLikes(id));
     }
 
     @GetMapping("gtc") //Get twit comments
     @PreAuthorize("hasAuthority('twit:read')")
-    public ResponseEntity<List<Comment>> getTwitComments(@RequestParam long id){
+    public ResponseEntity<List<Comment>> getTwitComments(@RequestParam long id) throws Exception404 {
         return ResponseEntity.ok(twitService.getTwitComments(id));
     }
 

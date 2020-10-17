@@ -4,6 +4,9 @@ import com.nima.twitter.domain.Comment;
 import com.nima.twitter.domain.LikeObj;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import com.nima.twitter.exception.EntityExistException;
+import com.nima.twitter.exception.Exception404;
+import com.nima.twitter.exception.RoleNotFoundException;
 import com.nima.twitter.repository.UserRepository;
 import com.nima.twitter.service.CommentService;
 import com.nima.twitter.service.LikeObjService;
@@ -43,7 +46,12 @@ public class UserServiceImp implements UserDetailsService,UserService {
 
 
     @Override
-    public User create(String username, String password, String phone, String email, String role) throws IOException {
+    public User create(String username, String password, String phone, String email, String role) throws EntityExistException,
+            RoleNotFoundException{
+        if(userRepository.findByUsername(username).isPresent() || userRepository.findByPhone(phone).isPresent() ||
+         userRepository.findByEmail(email).isPresent()){
+            throw new EntityExistException("user with this credentials exist");
+        }
         User user = new User();
         user.setPassword(passwordEncoder.encode(password));
         user.setUsername(username);
@@ -58,13 +66,13 @@ public class UserServiceImp implements UserDetailsService,UserService {
                 user.setRole(UserRole.CLIENT);
                 break;
             default:
-                throw new IOException("Role not found");
+                throw new RoleNotFoundException(String.format("Role \"%s\" not found - use \"a\" for admin and \"c\" for client",role));
         }
         return userRepository.save(user);
     }
 
     @Override
-    public User update(long id, String username, String password, String phone, String email) {
+    public User update(long id, String username, String password, String phone, String email) throws Exception404 {
         User user = this.findUser(id);
         user.setPassword(passwordEncoder.encode(password));
         user.setUsername(username);
@@ -74,7 +82,7 @@ public class UserServiceImp implements UserDetailsService,UserService {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(long id) throws Exception404 {
         User user = this.findUser(id);
         userRepository.delete(user);
     }
@@ -85,26 +93,28 @@ public class UserServiceImp implements UserDetailsService,UserService {
     }
 
     @Override
-    public List<Twit> getUserTwits(long id) {
+    public List<Twit> getUserTwits(long id) throws Exception404 {
         User user = this.findUser(id);
         return twitService.getUserTwits(user);
     }
 
     @Override
-    public List<LikeObj> getUserLikes(long id) {
+    public List<LikeObj> getUserLikes(long id) throws Exception404 {
         User user = this.findUser(id);
         return likeObjService.getUserLikes(user);
     }
 
     @Override
-    public List<Comment> getUserComments(long id) {
+    public List<Comment> getUserComments(long id) throws Exception404 {
         User user = this.findUser(id);
         return commentService.getUserComments(user);
     }
 
     @Override
-    public User findUser(long id) {
-        return userRepository.findById(id).get();
+    public User findUser(long id) throws Exception404 {
+        return userRepository.findById(id).orElseThrow(
+                ()->new Exception404(String.format("User not found with id : %d",id))
+        );
     }
 
     @Override

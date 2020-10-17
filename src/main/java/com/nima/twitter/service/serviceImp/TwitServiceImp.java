@@ -4,6 +4,7 @@ import com.nima.twitter.domain.Comment;
 import com.nima.twitter.domain.LikeObj;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import com.nima.twitter.exception.Exception404;
 import com.nima.twitter.repository.TwitRepository;
 import com.nima.twitter.service.CommentService;
 import com.nima.twitter.service.LikeObjService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TwitServiceImp implements TwitService {
@@ -39,7 +41,7 @@ public class TwitServiceImp implements TwitService {
     }
 
     @Override
-    public Twit update(long id, User user, String content, Date pubDate) {
+    public Twit update(long id, User user, String content, Date pubDate) throws Exception404 {
         Twit twit = this.findTwit(id);
         twit.setUser(user);
         twit.setContent(content);
@@ -48,7 +50,7 @@ public class TwitServiceImp implements TwitService {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(long id) throws Exception404 {
         Twit twit = this.findTwit(id);
         twitRepository.delete(twit);
     }
@@ -64,24 +66,28 @@ public class TwitServiceImp implements TwitService {
     }
 
     @Override
-    public Twit findTwit(long id) {
+    public Twit findTwit(long id) throws Exception404 {
+        Optional<Twit> twit = twitRepository.findById(id);
+        if(twit.isEmpty()){
+            throw new Exception404(String.format("Twit not found with id : %d",id));
+        }
         return twitRepository.findById(id).get();
     }
 
     @Override
-    public List<LikeObj> getTwitLikes(long id) {
+    public List<LikeObj> getTwitLikes(long id) throws Exception404 {
         Twit twit = this.findTwit(id);
         return likeObjService.getTwitLikes(twit);
     }
 
     @Override
-    public List<Comment> getTwitComments(long id) {
+    public List<Comment> getTwitComments(long id) throws Exception404 {
         Twit twit = this.findTwit(id);
         return commentService.getTwitComments(twit);
     }
 
     @Override
-    public User getTwitUser(long id) {
+    public User getTwitUser(long id) throws Exception404 {
         return this.findTwit(id).getUser();
     }
 }

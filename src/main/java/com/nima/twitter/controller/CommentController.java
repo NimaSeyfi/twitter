@@ -3,6 +3,7 @@ package com.nima.twitter.controller;
 import com.nima.twitter.domain.Comment;
 import com.nima.twitter.domain.Twit;
 import com.nima.twitter.domain.User;
+import com.nima.twitter.exception.Exception404;
 import com.nima.twitter.service.CommentService;
 import com.nima.twitter.service.TwitService;
 import com.nima.twitter.service.UserService;
@@ -35,12 +36,12 @@ public class CommentController {
     @PostMapping
     @PreAuthorize("hasAuthority('comment:write')")
     public ResponseEntity<Comment> createCommentWithUserIdAndTwitId(@RequestParam long userId,
-                                                                    @RequestParam long twitId,
-                                                                    @RequestParam String text){
+                                                                    @RequestParam long twitId, @RequestParam String text) throws Exception404 {
         Twit twit = twitService.findTwit(twitId);
         User user = userService.findUser(userId);
         Date pubDate = new Date();
         return ResponseEntity.ok(commentService.create(user,twit,text, pubDate));
+
     }
 
     @PutMapping
@@ -49,7 +50,7 @@ public class CommentController {
                                               @RequestParam long userId,
                                               @RequestParam long twitId,
                                               @RequestParam String text,
-                                              @RequestParam String pubDate) throws ParseException {
+                                              @RequestParam String pubDate) throws ParseException, Exception404 {
         Twit twit = twitService.findTwit(twitId);
         User user = userService.findUser(userId);
         Date date=new SimpleDateFormat("yyyy/mm/dd hh:mm:ss").parse(pubDate);
@@ -64,13 +65,13 @@ public class CommentController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('comment:read')")
-    public ResponseEntity<Comment> getComment(@RequestParam long id){
+    public ResponseEntity<Comment> getComment(@RequestParam long id) throws Exception404 {
         return ResponseEntity.ok(commentService.findComment(id));
     }
 
     @DeleteMapping
     @PreAuthorize("hasAuthority('comment:write')")
-    public ResponseEntity<Void> deleteComment(@RequestParam long id){
+    public ResponseEntity<Void> deleteComment(@RequestParam long id) throws Exception404 {
         commentService.delete(id);
         return ResponseEntity.ok().build();
     }
