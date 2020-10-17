@@ -8,6 +8,7 @@ import com.nima.twitter.service.TwitService;
 import com.nima.twitter.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,13 +19,18 @@ import java.util.List;
 @RequestMapping("/twit")
 public class TwitController {
 
+    private final TwitService twitService;
+    private final UserService userService;
+
     @Autowired
-    private TwitService twitService;
-    @Autowired
-    private UserService userService;
+    public TwitController(TwitService twitService, UserService userService) {
+        this.twitService = twitService;
+        this.userService = userService;
+    }
 
 
     @PostMapping
+    @PreAuthorize("hasAuthority('twit:write')")
     public ResponseEntity<Twit> createTwitWithUserId(@RequestParam long userId,
                                                      @RequestParam String content){
         User user = userService.findUser(userId);
@@ -33,6 +39,7 @@ public class TwitController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('twit:write')")
     public ResponseEntity<Twit> updateTwit(@RequestParam long id,
                                            @RequestParam long userId,
                                            @RequestParam String content,
@@ -43,27 +50,33 @@ public class TwitController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Twit>> getAllTwits(){
         return ResponseEntity.ok(twitService.getAllTwits());
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('twit:read')")
     public ResponseEntity<Twit> getTwit(@RequestParam long id){
         return ResponseEntity.ok(twitService.findTwit(id));
     }
 
     @DeleteMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteTwit(@RequestParam long id){
         twitService.delete(id);
         return ResponseEntity.ok().build();
     }
 
+
     @GetMapping("gtl") //Get twit likes
+    @PreAuthorize("hasAuthority('twit:read')")
     public ResponseEntity<List<LikeObj>> getTwitLikes(@RequestParam long id){
         return ResponseEntity.ok(twitService.getTwitLikes(id));
     }
 
     @GetMapping("gtc") //Get twit comments
+    @PreAuthorize("hasAuthority('twit:read')")
     public ResponseEntity<List<Comment>> getTwitComments(@RequestParam long id){
         return ResponseEntity.ok(twitService.getTwitComments(id));
     }

@@ -10,21 +10,20 @@ import com.nima.twitter.service.LikeObjService;
 import com.nima.twitter.service.TwitService;
 import com.nima.twitter.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-//import com.nima.twitter.security.UserRole;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.nima.twitter.security.UserRole;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-
 import static java.lang.String.format;
 
 @Service
-//public class UserServiceImp implements UserService, UserDetailsService {
-public class UserServiceImp implements UserService {
+public class UserServiceImp implements UserDetailsService,UserService {
 
     @Autowired
     private TwitService twitService;
@@ -34,22 +33,24 @@ public class UserServiceImp implements UserService {
     private CommentService commentService;
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserServiceImp(UserRepository userRepository) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
     @Override
     public User create(String username, String password, String phone, String email, String role) throws IOException {
         User user = new User();
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setUsername(username);
         user.setEmail(email);
         user.setPhone(phone);
-        /**
         role = role.toLowerCase();
-        switch (role){
+        switch (role) {
             case "a":
                 user.setRole(UserRole.ADMIN);
                 break;
@@ -59,14 +60,13 @@ public class UserServiceImp implements UserService {
             default:
                 throw new IOException("Role not found");
         }
-        **/
         return userRepository.save(user);
     }
 
     @Override
     public User update(long id, String username, String password, String phone, String email) {
         User user = this.findUser(id);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setUsername(username);
         user.setEmail(email);
         user.setPhone(phone);
@@ -117,14 +117,39 @@ public class UserServiceImp implements UserService {
         return userRepository.findByPhone(phone).get();
     }
 
-//    @Override
-//    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-//        final Optional<User> user = userRepository.findByUsername(s);
-//        if (user.isPresent()) {
-//            return user.get();
-//        }
-//        else {
-//            throw new UsernameNotFoundException(format("User with username {0} cannot be found.", s));
-//        }
-//    }
+    @Override
+    public User findUserByUsername(String username) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            return userRepository.findByUsername(username).get();
+        } else{
+            return null;
+        }
+    }
+
+    @Override
+    public void createAdmin() throws IOException {
+        if (!userRepository.findByUsername("admin").isPresent()) {
+            this.create("admin", "admin", "09123456789",
+                    "mail@mail.com","a");
+        }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+
+        final Optional<User> user = userRepository.findByUsername(s);
+        org.springframework.security.core.userdetails.User.UserBuilder builder = null;
+        if (user.isPresent()) {
+            if (user != null) {
+                builder = org.springframework.security.core.userdetails.User.withUsername(user.get().getUsername());
+                builder.password(user.get().getPassword());
+                builder.roles(user.get().getRole().name());
+                builder.authorities(user.get().getAuthorities());
+            }
+        } else {
+            throw new UsernameNotFoundException(format("User with username {0} cannot be found.", s));
+        }
+        return builder.build();
+    }
+
 }
