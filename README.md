@@ -34,6 +34,8 @@ LikeObj: a like entity wich has Many-to-one relations with User and Twit domains
   - User user
   - Twit twit
   - Date date
+  
+[Relation Between Domains](https://gofile.io/d/oQ1MP0)<br>
 
 **NOTE:** All ids are auto generated. 
 **NOTE:** UserRole is a ENUM class that used for Roles in this application. Any Role containts some Permissions wich are used for authorize methods and giving access to users.
@@ -47,7 +49,8 @@ in this version we Have 2 Roles : **Admin** and **Client**:<br>
   - CLIENT - Permissions : LIKE_READ,LIKE_WRITE, COMMENT_READ, COMMENT_WRITE,TWIT_READ,TWIT_WRITE,USER_READ
   - ADMIN - Permissions : LIKE_READ,   LIKE_WRITE, COMMENT_READ, COMMENT_WRITE,TWIT_READ,TWIT_WRITE, USER_READ, USER_WRITE
   
-# Repositories:
+# Repositories
 All Domains have a repository that can handle access to database and make some CRUD (Create, Read, Update, Delete) operations easier.
 
-# Services:
+# Services
+Any Domain Also have a Service. in any service we user the Repository of that domain and maybe other service to handle some methods. all services have CRUD Methods and other functionalities added to the services individually .
